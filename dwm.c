@@ -987,10 +987,16 @@ grabkeys(void)
 
 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
 		for (i = 0; i < LENGTH(keys); i++)
-			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-				for (j = 0; j < LENGTH(modifiers); j++)
+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym))){
+        printf("the key code thingamajig was: %x \r\n", code);
+				for (j = 0; j < LENGTH(modifiers); j++){
 					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-						 True, GrabModeAsync, GrabModeAsync);
+                   True, GrabModeAsync, GrabModeAsync);
+        }
+      }
+      else{
+        printf("the key code thingamajig NOT was: %x \r\n", code);
+      }
 	}
 }
 
@@ -1022,6 +1028,7 @@ keypress(XEvent *e)
 
 	ev = &e->xkey;
 	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
+  printf("the key symbol was: %d \r\n", keysym);
 	for (i = 0; i < LENGTH(keys); i++)
 		if (keysym == keys[i].keysym
 		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
@@ -2163,6 +2170,7 @@ main(int argc, char *argv[])
 	checkotherwm();
 	setup();
 	scan();
+  // me
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
