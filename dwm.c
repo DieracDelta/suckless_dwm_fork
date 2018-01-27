@@ -41,6 +41,9 @@
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
 
+// SOUND
+#include <alsa/asoundlib.h>
+
 #include "drw.h"
 #include "util.h"
 
@@ -2175,4 +2178,41 @@ main(int argc, char *argv[])
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
+}
+
+enum type_of_call_t {mute=0, unmute=1, relative=2};
+long prev_val = 0;
+void AlsaSetup(long volume, type_of_call_t the_type)
+{
+
+  long min, max;
+  snd_mixer_t *handle;
+  snd_mixer_selem_id_t *sid;
+  const char *card = "default";
+  const char *selem_name = "Master";
+
+  snd_mixer_open(&handle, 0);
+  snd_mixer_attach(handle, card);
+  snd_mixer_selem_register(handle, NULL, NULL);
+  snd_mixer_load(handle);
+
+  snd_mixer_selem_id_alloca(&sid);
+  snd_mixer_selem_id_set_index(sid, 0);
+  snd_mixer_selem_id_set_name(sid, selem_name);
+  snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+
+  switch(the_type){
+  case mute:
+    snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
+    prev_val = *max;
+    snd_mixer_selem_set_playback_volume_all(elem, 0);
+    break;
+  case unmute:
+    break;
+  case relative:
+    break;
+    // TODO finish out by putting in default case + exit
+  }
+
+  snd_mixer_close(handle);
 }
