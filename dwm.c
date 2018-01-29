@@ -236,6 +236,7 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 static void volctrl(const Arg *arg);
+static void toggle_cursor(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -2234,4 +2235,27 @@ void volctrl(const Arg * arg)
     break;
   }
   snd_mixer_close(handle);
+}
+
+void toggle_cursor(const Arg *arg)
+{
+  Cursor acursor;
+  XColor color;
+  Pixmap bitmapNoData;
+  char noData[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+  static int cursor_visible = 1;
+
+  memset(&color, 0, sizeof(color));
+
+  if (cursor_visible) {
+    bitmapNoData = XCreateBitmapFromData(dpy, root, noData, 8, 8);
+    acursor = XCreatePixmapCursor(dpy, bitmapNoData,
+                                 bitmapNoData, &color, &color, 0, 0);
+    XFreePixmap(dpy, bitmapNoData);
+  } else {
+    acursor = XCreateFontCursor(dpy, XC_left_ptr);
+  }
+  XDefineCursor(dpy, root, acursor);
+  XFreeCursor(dpy, acursor);
+  cursor_visible ^= 1;
 }

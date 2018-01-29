@@ -71,10 +71,11 @@ static const char *termcmd[]  = { "st", NULL };
 static const char *firefoxcmd[]  = { "firefox", NULL }; 
 static const char *emacscmd[]  = { "emacsclient -c", NULL }; 
 // background
-/* static const char *fehcmd[] = {"feh", "--bg-scale", "~/.config/i3/botnet.jpg"}; */
 
 static Key keys[] = {
-	/* modifier                     key        function        argument */
+  // mouse addition/removal
+	{ MODKEY|ControlMask,                       XK_x,      toggle_cursor,  {0} },
+/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_t,      spawn,          {.v = emacscmd} },

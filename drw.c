@@ -454,8 +454,8 @@ drw_cur_create(Drw *drw, int shape)
 void
 drw_cur_free(Drw *drw, Cur *cursor)
 {
-	if (!cursor)
-		return;
-	XFreeCursor(drw->dpy, cursor->cursor);
-	free(cursor);
+	if (cursor != NULL){
+    XFreeCursor(drw->dpy, cursor->cursor);
+    free(cursor);
+  }
 }
