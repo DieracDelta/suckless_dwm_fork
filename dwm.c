@@ -40,6 +40,7 @@
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
+#include <stdbool.h>
 
 
 #include "drw.h"
@@ -2237,25 +2238,36 @@ void volctrl(const Arg * arg)
   snd_mixer_close(handle);
 }
 
+
+
+void toggle_window(Window * win, bool visibility);
 void toggle_cursor(const Arg *arg)
 {
+  static int cursor_visible = 1;
+  toggle_window(&root, cursor_visible);
+  if(mons != NULL){
+    toggle_window(&mons->barwin, cursor_visible);
+  }
+  cursor_visible ^= 1;
+}
+
+void toggle_window(Window * win, bool cursor_visible){
   Cursor acursor;
   XColor color;
   Pixmap bitmapNoData;
   char noData[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  static int cursor_visible = 1;
 
   memset(&color, 0, sizeof(color));
 
   if (cursor_visible) {
-    bitmapNoData = XCreateBitmapFromData(dpy, root, noData, 8, 8);
+    bitmapNoData = XCreateBitmapFromData(dpy, *win, noData, 8, 8);
     acursor = XCreatePixmapCursor(dpy, bitmapNoData,
-                                 bitmapNoData, &color, &color, 0, 0);
+                                  bitmapNoData, &color, &color, 0, 0);
     XFreePixmap(dpy, bitmapNoData);
   } else {
     acursor = XCreateFontCursor(dpy, XC_left_ptr);
   }
-  XDefineCursor(dpy, root, acursor);
+
+  XDefineCursor(dpy, *win, acursor);
   XFreeCursor(dpy, acursor);
-  cursor_visible ^= 1;
 }
