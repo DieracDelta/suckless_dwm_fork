@@ -1,4 +1,5 @@
 /* See LICENSE file for copyright and license details. */
+#include "movestack.c"
 
 /* appearance */
 static const char *fonts[] = {
@@ -68,7 +69,7 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "st", NULL }; 
 static const char *firefoxcmd[]  = { "firefox", NULL }; 
-static const char *emacscmd[]  = { "emacs", NULL }; 
+static const char *emacscmd[]  = { "emacsclient -c", NULL }; 
 // background
 /* static const char *fehcmd[] = {"feh", "--bg-scale", "~/.config/i3/botnet.jpg"}; */
 
@@ -85,6 +86,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_p,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+  { MODKEY|ShiftMask,             XK_v,      movestack,      {.i = +1 } },
+  { MODKEY|ShiftMask,             XK_w,      movestack,      {.i = -1 } },
 	/* { MODKEY,                       XK_Return, zoom,           {0} }, */
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_x,      killclient,     {0} },
@@ -99,6 +102,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+
+
+  //sound
+	{ MODKEY|ControlMask,           XK_n,   volctrl,        {.i = 2, .f = 50}},
+	{ MODKEY|ControlMask,           XK_z,    volctrl,        {.i = 2, .f = -50}},
+	{ MODKEY|ControlMask,           XK_Up,      volctrl,        {.i = 1}},
+	{ MODKEY|ControlMask,           XK_Down,    volctrl,        {.i = 0}},
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)

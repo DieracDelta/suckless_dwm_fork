@@ -41,8 +41,6 @@
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
 
-// SOUND
-#include <alsa/asoundlib.h>
 
 #include "drw.h"
 #include "util.h"
@@ -237,6 +235,7 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+static void volctrl(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
@@ -2180,10 +2179,20 @@ main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-enum type_of_call_t {mute=0, unmute=1, relative=2};
-long prev_val = 0;
-void AlsaSetup(long volume, type_of_call_t the_type)
+enum type_of_call_t {MUTE=0, UNMUTE=1, RELATIVE=2};
+
+// SOUND
+int cur_val = 50;
+#include <alsa/asoundlib.h>
+void volctrl(const Arg * arg)
 {
+
+  enum type_of_call_t type = arg->i;
+  printf("%d AW YEA \r\n", type);
+  long volume;
+  if(type == RELATIVE){
+    long volume = arg->f;
+  }
 
   long min, max;
   snd_mixer_t *handle;
@@ -2201,18 +2210,28 @@ void AlsaSetup(long volume, type_of_call_t the_type)
   snd_mixer_selem_id_set_name(sid, selem_name);
   snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
 
-  switch(the_type){
-  case mute:
+  switch(type){
+  case MUTE:
+    snd_mixer_selem_set_playback_switch_all(elem, 0);
+    break;
+  case UNMUTE:
+    snd_mixer_selem_set_playback_switch_all(elem, 1);
+    break;
+  case RELATIVE:
     snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-    prev_val = *max;
-    snd_mixer_selem_set_playback_volume_all(elem, 0);
+    cur_val += volume;
+    if(cur_val < 0){
+      cur_val = 0;
+    }
+    if(cur_val > 100){
+      cur_val = 100;
+    }
+    int success = snd_mixer_selem_set_playback_volume_all(elem, cur_val * 100/max);
+    printf("so the first thing is %d and the max is %d", min, max);
+    if(success < 0){
+      printf("SHIT WENT DOWN OH NO: %d \r\n", success);
+    }
     break;
-  case unmute:
-    break;
-  case relative:
-    break;
-    // TODO finish out by putting in default case + exit
   }
-
   snd_mixer_close(handle);
 }
