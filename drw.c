@@ -10,6 +10,7 @@
 
 #define UTF_INVALID 0xFFFD
 #define UTF_SIZ     4
+#define UTF_STATUS_MAX_THRESHOLD 5000
 
 static const unsigned char utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static const unsigned char utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
@@ -346,11 +347,12 @@ drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, const char *tex
 				drw_font_getexts(curfont, utf8str, len, &tex);
 
 			if (len) {
-				memcpy(buf, utf8str, len);
-				buf[len] = '\0';
-				if (len < utf8strlen)
-					for (i = len; i && i > len - 3; buf[--i] = '.');
-
+				memcpy(buf, utf8str, utf8strlen);
+        if(utf8strlen > UTF_STATUS_MAX_THRESHOLD) {
+          buf[len] = '\0';
+          if (len < utf8strlen)
+          	for (i = len; i && i > len - 3; buf[--i] = '.');
+          }
 				if (render) {
 					th = curfont->ascent + curfont->descent;
 					ty = y + (h / 2) - (th / 2) + curfont->ascent;
