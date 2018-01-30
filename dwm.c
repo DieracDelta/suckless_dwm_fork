@@ -271,6 +271,7 @@ static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root;
+static bool cursor_visible = true;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -992,14 +993,14 @@ grabkeys(void)
 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
 		for (i = 0; i < LENGTH(keys); i++)
 			if ((code = XKeysymToKeycode(dpy, keys[i].keysym))){
-        printf("the key code thingamajig was: %x \r\n", code);
+        //printf("the key code thingamajig was: %x \r\n", code);
 				for (j = 0; j < LENGTH(modifiers); j++){
 					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
                    True, GrabModeAsync, GrabModeAsync);
         }
       }
       else{
-        printf("the key code thingamajig NOT was: %x \r\n", code);
+        //printf("the key code thingamajig NOT was: %x \r\n", code);
       }
 	}
 }
@@ -1032,7 +1033,7 @@ keypress(XEvent *e)
 
 	ev = &e->xkey;
 	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
-  printf("the key symbol was: %d \r\n", keysym);
+  //printf("the key symbol was: %d \r\n", keysym);
 	for (i = 0; i < LENGTH(keys); i++)
 		if (keysym == keys[i].keysym
 		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
@@ -1872,11 +1873,17 @@ updateclientlist()
 	Monitor *m;
 
 	XDeleteProperty(dpy, root, netatom[NetClientList]);
-	for (m = mons; m; m = m->next)
-		for (c = m->clients; c; c = c->next)
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c; c = c->next) {
 			XChangeProperty(dpy, root, netatom[NetClientList],
 			                XA_WINDOW, 32, PropModeAppend,
 			                (unsigned char *) &(c->win), 1);
+      // by default is visible; only need to make invisible
+      /* if(!cursor_visible){ */
+      /*   toggle_window(c->win, cursor_visible); */
+      /* } */
+    }
+  }
 }
 
 int
@@ -2174,7 +2181,6 @@ main(int argc, char *argv[])
 	checkotherwm();
 	setup();
 	scan();
-  // me
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
@@ -2229,7 +2235,7 @@ void volctrl(const Arg * arg)
       cur_val = 100;
     }
     int success = snd_mixer_selem_set_playback_volume_all(elem, cur_val * 100/max);
-    printf("so the first thing is %d and the max is %d", min, max);
+    //printf("so the first thing is %d and the max is %d", min, max);
     if(success < 0){
       printf("SHIT WENT DOWN OH NO: %d \r\n", success);
     }
@@ -2243,12 +2249,27 @@ void volctrl(const Arg * arg)
 void toggle_window(Window * win, bool visibility);
 void toggle_cursor(const Arg *arg)
 {
-  static int cursor_visible = 1;
   toggle_window(&root, cursor_visible);
   if(mons != NULL){
     toggle_window(&mons->barwin, cursor_visible);
   }
-  cursor_visible ^= 1;
+
+  Client *c;
+  Monitor *m;
+	for (m = mons; m; m = m->next) {
+		for (c = m->clients; c; c = c->next) {
+      // this if statement shouldn't matter either
+      if(c == NULL)
+        break;
+      if (c->win == root || c->win == mons->barwin)
+        continue;
+      toggle_window(c->win, cursor_visible);
+    }
+    // this does nothign wtf
+    if(m == NULL)
+      break;
+  }
+  cursor_visible = !cursor_visible;
 }
 
 void toggle_window(Window * win, bool cursor_visible){
@@ -2258,6 +2279,7 @@ void toggle_window(Window * win, bool cursor_visible){
   char noData[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
   memset(&color, 0, sizeof(color));
+  printf("o shit\r\n");
 
   if (cursor_visible) {
     bitmapNoData = XCreateBitmapFromData(dpy, *win, noData, 8, 8);
@@ -2267,7 +2289,6 @@ void toggle_window(Window * win, bool cursor_visible){
   } else {
     acursor = XCreateFontCursor(dpy, XC_left_ptr);
   }
-
   XDefineCursor(dpy, *win, acursor);
   XFreeCursor(dpy, acursor);
 }
