@@ -2187,22 +2187,19 @@ main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-enum type_of_call_t {MUTE=0, UNMUTE=1, RELATIVE=2};
+enum type_of_call_t {MUTE=0, UNMUTE=1, UP=2, DOWN=3};
 
 // SOUND
-int cur_val = 50;
+static long int cur_val = 30000;
 #include <alsa/asoundlib.h>
+#define STEPSIZE 2000
 void volctrl(const Arg * arg)
 {
 
   enum type_of_call_t type = arg->i;
   printf("%d AW YEA \r\n", type);
-  long volume;
-  if(type == RELATIVE){
-    long volume = arg->f;
-  }
 
-  long min, max;
+  long int min, max;
   snd_mixer_t *handle;
   snd_mixer_selem_id_t *sid;
   const char *card = "default";
@@ -2217,6 +2214,7 @@ void volctrl(const Arg * arg)
   snd_mixer_selem_id_set_index(sid, 0);
   snd_mixer_selem_id_set_name(sid, selem_name);
   snd_mixer_elem_t* elem = snd_mixer_find_selem(handle, sid);
+  long int volume;
 
   switch(type){
   case MUTE:
@@ -2225,20 +2223,26 @@ void volctrl(const Arg * arg)
   case UNMUTE:
     snd_mixer_selem_set_playback_switch_all(elem, 1);
     break;
-  case RELATIVE:
+  case UP:
     snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-    cur_val += volume;
-    if(cur_val < 0){
+    if(cur_val + STEPSIZE >= max){
+      cur_val = max;
+    }
+    else{
+      cur_val += STEPSIZE;
+    }
+    snd_mixer_selem_set_playback_volume_all(elem, cur_val);
+    break;
+  case DOWN:
+    snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
+
+    if(cur_val <= STEPSIZE)
       cur_val = 0;
-    }
-    if(cur_val > 100){
-      cur_val = 100;
-    }
-    int success = snd_mixer_selem_set_playback_volume_all(elem, cur_val * 100/max);
-    //printf("so the first thing is %d and the max is %d", min, max);
-    if(success < 0){
-      printf("SHIT WENT DOWN OH NO: %d \r\n", success);
-    }
+    else
+      cur_val -= STEPSIZE;
+
+    snd_mixer_selem_set_playback_volume_all(elem, cur_val);
+
     break;
   }
   snd_mixer_close(handle);
