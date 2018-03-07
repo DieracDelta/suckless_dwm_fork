@@ -75,27 +75,54 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "st", NULL }; 
 static const char *firefoxcmd[]  = { "firefox", NULL }; 
-static const char *emacscmd[]  = { "emacsclient -c", NULL }; 
+static const char *emacscmd[]  = { "emacsclient", "-c", NULL }; 
+static const char *sleepcmd[] = {"sudo", "/usr/sbin/s2ram", NULL};
+static const char *lockcmd[] = {"slock", NULL};
+static const char *scrotcmd[] = {"/home/dieraca/.Suckless/suckless-dwm-restivo/scrotscript", NULL};
+/* static const char *brightnessUpcmd[] = {"sudo", "brightnessctl", "set". "7500", NULL}; */
+/* static const char *brightnessDowncmd[] = {"sudo", "brightnessctl", "set". "100", NULL}; */
+static const char *vimanywherecmd[] = {"/home/dieraca/.vim-anywhere/bin/run", NULL};
 // background
 
 static Key keys[] = {
-  // mouse addition/removal
+  /* modifier                     key        function        argument */
+
+  // mouse addition/removal -- DO NOT TOUCH; segfaults 
+  // TODO fix
 	{ MODKEY|ControlMask,                       XK_x,      toggle_cursor,  {0} },
-/* modifier                     key        function        argument */
+
+  // utilities and such commands
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_t,      spawn,          {.v = emacscmd} },
 	{ MODKEY,                       XK_q,      spawn,          {.v = firefoxcmd} },
-	{ MODKEY,                       XK_f,      togglebar,      {0} },
+  { MODKEY|ControlMask,           XK_semicolon, spawn,      {.v = sleepcmd}},
+  {MODKEY|ControlMask|ShiftMask,  XK_Return, spawn, {.v = vimanywherecmd}}, 
+
+  // TODO add in brightnessctl commands
+
+
+
+	{ MODKEY,                       XK_semicolon,      spawn,          {.v = lockcmd} },
+	{ MODKEY,                       XK_p,      spawn,          {.v = scrotcmd} },
+
+
+
+  // remove top bar
+	{ MODKEY|ShiftMask,             XK_f,      togglebar,      {0} },
+
+  // switch focus
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_p,      incnmaster,     {.i = -1 } },
+
+	/* { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, */
+	//{ MODKEY,                       XK_p,      incnmaster,     {.i = -1 } },
+
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-  { MODKEY|ShiftMask,             XK_v,      movestack,      {.i = +1 } },
-  { MODKEY|ShiftMask,             XK_w,      movestack,      {.i = -1 } },
-	/* { MODKEY,                       XK_Return, zoom,           {0} }, */
+  { MODKEY,             XK_n,      movestack,      {.i = +1 } },
+  { MODKEY|ShiftMask,             XK_n,      movestack,      {.i = -1 } },
+	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_x,      killclient,     {0} },
 	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[0]} },
@@ -121,6 +148,7 @@ static Key keys[] = {
     // increase
 	{ MODKEY|ControlMask,           XK_Right,    volctrl,        {.i = 2}},
 
+
   // tagging
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
@@ -131,6 +159,8 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
+
+  // close xserver
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 };
 

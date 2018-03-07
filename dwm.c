@@ -237,6 +237,7 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 static void volctrl(const Arg *arg);
+static void change_brightness(const Arg *arg);
 static void toggle_cursor(const Arg *arg);
 
 /* variables */
@@ -2295,4 +2296,39 @@ void toggle_window(Window * win, bool cursor_visible){
   }
   XDefineCursor(dpy, *win, acursor);
   XFreeCursor(dpy, acursor);
+}
+
+
+void change_brightness(const Arg * go_up_args){
+  bool go_up = (bool)go_up_args->i;
+  int how_much = 500;
+  char* FILE_PATH = "/sys/class/backlight/intel_backlight/brightness";
+  FILE* file = fopen (FILE_PATH, "r");
+  int current_brightness;
+  // there should only be one number lul
+  fscanf (file, "%d", &current_brightness);
+  fclose (file);
+
+  if(current_brightness > 7500 || current_brightness < 0){
+    return;
+  }
+
+
+  file = fopen(FILE_PATH, "w");
+  if(go_up){
+    if(how_much + current_brightness > 7500){
+      fprintf(file, "%d", 7500);
+      // write 7500 
+    } else{
+      fprintf(file, "%d", current_brightness + how_much);
+    }
+  }
+  else{
+    if(current_brightness - how_much < 0){
+      fprintf(file, "%d", 0);
+    } else{
+      fprintf(file, "%d", current_brightness - how_much);
+    }
+  }
+  fclose (file);
 }
