@@ -75,7 +75,8 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "st", NULL }; 
 static const char *firefoxcmd[]  = { "firefox", NULL }; 
-static const char *emacscmd[]  = { "emacsclient", "-c", NULL }; 
+static const char *emacsattachcmd[]  = { "emacsclient", "-c", NULL }; 
+static const char *emacsdaemoncmd[]  = { "emacs", "--daemon", NULL }; 
 static const char *sleepcmd[] = {"sudo", "/usr/sbin/s2ram", NULL};
 static const char *lockcmd[] = {"slock", NULL};
 static const char *scrotcmd[] = {"/home/dieraca/.Suckless/suckless-dwm-restivo/scrotscript", NULL};
@@ -94,10 +95,11 @@ static Key keys[] = {
   // utilities and such commands
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_t,      spawn,          {.v = emacscmd} },
+	{ MODKEY,                       XK_t,      spawn,          {.v = emacsattachcmd} },
+	{ MODKEY|ShiftMask,             XK_t,      spawn,          {.v = emacsdaemoncmd} },
 	{ MODKEY,                       XK_q,      spawn,          {.v = firefoxcmd} },
   { MODKEY|ControlMask,           XK_semicolon, spawn,      {.v = sleepcmd}},
-  {MODKEY|ShiftMask,  XK_Return, spawn, {.v = vimanywherecmd}}, 
+  {MODKEY|ShiftMask,  XK_Return, spawn, {.v = vimanywherecmd}},
 
 // brightnesscontrol
 	{ MODKEY|ShiftMask,                       XK_p,      change_brightness,          {.i =1} },
