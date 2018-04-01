@@ -22,14 +22,23 @@ FREETYPEINC = /usr/include/freetype2
 
 # includes and libs
 INCS = -I${X11INC} -I${FREETYPEINC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lasound -lalienfx #-libusb
+LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lasound
+
+ifeq ($(ALIENFX), 1)
+LIBS += -lalienfx
+endif
 
 # flags
 CPPFLAGS = -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
 #CFLAGS   = -g -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
 CFLAGS   = -ggdb -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os ${INCS} ${CPPFLAGS} 
 
-LDFLAGS  = -s ${LIBS}
+LDFLAGS  = -s ${LIBS} 
+
+ifeq ($(ALIENFX), 1)
+CFLAGS += `pkg-config --libs --cflags libusb-1.0`
+LDFLAGS += `pkg-config --libs --cflags libusb-1.0`
+endif
 
 # Solaris
 #CFLAGS = -fast ${INCS} -DVERSION=\"${VERSION}\"

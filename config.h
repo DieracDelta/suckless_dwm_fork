@@ -1,5 +1,8 @@
 /* See LICENSE file for copyright and license details. */
+#define ALIENFX 1
+#ifdef ALIENFX
 #include "alienfx.h"
+#endif
 #include "movestack.c"
 
 /* appearance */
@@ -74,10 +77,10 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
-static const char *termcmd[]  = { "st", NULL }; 
-static const char *firefoxcmd[]  = { "firefox", NULL }; 
-static const char *emacsattachcmd[]  = { "emacsclient", "-c", NULL }; 
-static const char *emacsdaemoncmd[]  = { "emacs", "--daemon", NULL }; 
+static const char *termcmd[]  = { "st", NULL };
+static const char *firefoxcmd[]  = { "firefox", NULL };
+static const char *emacsattachcmd[]  = { "emacsclient", "-c", NULL };
+static const char *emacsdaemoncmd[]  = { "emacs", "--daemon", NULL };
 static const char *sleepcmd[] = {"sudo", "/usr/sbin/s2ram", NULL};
 static const char *lockcmd[] = {"slock", NULL};
 static const char *scrotcmd[] = {"/home/dieraca/.Suckless/suckless-dwm-restivo/scrotscript", NULL};
@@ -88,7 +91,10 @@ static const char *vimanywherecmd[] = {"/home/dieraca/.vim-anywhere/bin/run", NU
 
 static Key keys[] = {
   /* modifier                     key        function        argument */
+  #ifdef ALIENFX
 	{ LIGHTKEY,                       XK_semicolon,      poweroff_lights,          {0} },
+	{ LIGHTKEY|ShiftMask,             XK_semicolon,      power_red_lights,          {0} },
+  #endif
 
   // mouse addition/removal -- DO NOT TOUCH; segfaults 
   // TODO fix
