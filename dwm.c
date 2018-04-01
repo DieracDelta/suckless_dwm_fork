@@ -20,6 +20,7 @@
  *
  * To understand everything else, start reading main().
  */
+#include <alienfx.h>
 #include <errno.h>
 #include <locale.h>
 #include <signal.h>
@@ -2259,6 +2260,7 @@ main(int argc, char *argv[])
 enum type_of_call_t {MUTE=0, UNMUTE=1, UP=2, DOWN=3};
 
 // SOUND
+// TODO add in log scaling (volume is not linear)
 static long int cur_val = 30000;
 #include <alsa/asoundlib.h>
 #define STEPSIZE 2000

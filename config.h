@@ -1,12 +1,13 @@
 /* See LICENSE file for copyright and license details. */
+#include "alienfx.h"
 #include "movestack.c"
 
 /* appearance */
 static const char *fonts[] = {
-  "FontAwesome:size=8",
-  "Inconsolata:size=8",
+  "FontAwesome:size=12",
+  "Inconsolata:size=12",
 };
-static const char dmenufont[]       = "Inconsolata:size=10";
+static const char dmenufont[]       = "Inconsolata:size=15";
 static const char normbordercolor[] = "#444444";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";
@@ -59,7 +60,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-/* #define MODKEY Mod4Mask */
+#define LIGHTKEY Mod4Mask
 #define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
@@ -87,6 +88,7 @@ static const char *vimanywherecmd[] = {"/home/dieraca/.vim-anywhere/bin/run", NU
 
 static Key keys[] = {
   /* modifier                     key        function        argument */
+	{ LIGHTKEY,                       XK_semicolon,      poweroff_lights,          {0} },
 
   // mouse addition/removal -- DO NOT TOUCH; segfaults 
   // TODO fix
