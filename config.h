@@ -93,7 +93,12 @@ static Key keys[] = {
   /* modifier                     key        function        argument */
   #ifdef ALIENFX
 	{ LIGHTKEY,                       XK_semicolon,      poweroff_lights,          {0} },
-	{ LIGHTKEY|ShiftMask,             XK_semicolon,      power_red_lights,          {0} },
+	{ LIGHTKEY,                       XK_j,      up_it_red,          {0} },
+	{ LIGHTKEY,                       XK_k,      up_it_blue,          {0} },
+	{ LIGHTKEY,                       XK_l,      up_it_green,          {0} },
+	{ LIGHTKEY|ShiftMask,                       XK_j,      down_it_red,          {0} },
+	{ LIGHTKEY|ShiftMask,                       XK_k,      down_it_blue,          {0} },
+	{ LIGHTKEY|ShiftMask,                       XK_l,      down_it_green,          {0} },
   #endif
 
   // mouse addition/removal -- DO NOT TOUCH; segfaults 
