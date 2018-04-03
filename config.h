@@ -23,7 +23,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 
 /* tagging */
-static const char *tags[] = {"1", "2", "3", "4", "5", "6",  "8", "9", "0"};
+static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
 
 #define NUMCOLORS         8
 static const char colors[NUMCOLORS][MAXCOLORS][8] = {
@@ -69,7 +69,7 @@ static const Layout layouts[] = {
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+	{ LIGHTKEY, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -87,6 +87,7 @@ static const char *scrotcmd[] = {"/home/dieraca/.Suckless/suckless-dwm-restivo/s
 /* static const char *brightnessUpcmd[] = {"sudo", "brightnessctl", "set". "7500", NULL}; */
 /* static const char *brightnessDowncmd[] = {"sudo", "brightnessctl", "set". "100", NULL}; */
 static const char *vimanywherecmd[] = {"/home/dieraca/.vim-anywhere/bin/run", NULL};
+/* static const char *startpulsecmd[] = {"pulseaudio", "--start", NULL}; */
 // background
 
 static Key keys[] = {
@@ -185,6 +186,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 };
 
+// TODO disable
 /* button definitions */
 /* click can be ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
